@@ -1,0 +1,6 @@
+pandas
+fastapi
+uvicorn
+mysql-connector-python
+python-dotenv
+httpx

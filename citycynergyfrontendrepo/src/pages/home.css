@@ -1,0 +1,57 @@
+.bgimg {
+  background-image: url(../assets/pexels-tomfisk-3820880.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  height: 100vh;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.603);
+  z-index: 1;
+}
+
+.about-us {
+  background-color: #f8f9fa;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+p {
+  font-size: 1.125rem;
+}
+
+.py-20 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.274);
+}
