@@ -1,4 +1,3 @@
-// server.js
 require('dotenv').config();
 const express = require('express');
 const { sequelize, connectDB } = require('./Config/database');
@@ -7,6 +6,10 @@ const tenderRoutes = require('./Routes/tenderRoutes');
 const cors = require('cors');
 const axios = require('axios'); // Required for periodic PING requests
 const app = express();
+const cron = require('node-cron');
+const { Op } = require('sequelize');
+const OTP = require('./Models/OTP');
+
 const port = process.env.PORT || 3000;
 
 // Enable CORS
@@ -48,6 +51,16 @@ const pingFastAPI = async () => {
     }
 };
 
+// Schedule OTP cleanup every 10 minutes
+cron.schedule('*/10 * * * *', async () => {
+    try {
+      const now = new Date();
+      await OTP.destroy({ where: { expiresAt: { [Op.lt]: now } } });
+      console.log('[CRON] Expired OTPs removed.');
+    } catch (error) {
+      console.error('[CRON] Error cleaning expired OTPs:', error);
+    }
+  });
 
 // Schedule periodic PING every 10 minutes (600,000 ms)
 setInterval(pingFastAPI, 600000);

@@ -1,12 +1,11 @@
-// Register.jsx
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons
-import ReCAPTCHA from "react-google-recaptcha";
 import mhlogo from "../assets/mhgovlogo.png";
+
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 import { useLoading } from "../context/LoadingContext";
-
 
 export const Register = () => {
   const [email, setEmail] = useState("");
@@ -15,14 +14,13 @@ export const Register = () => {
   const [error, setError] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Toggle visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Toggle confirm password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
-  const navigate = useNavigate();
   const [captchaToken, setCaptchaToken] = useState(null);
   const recaptcha = useRef(null);
+  const navigate = useNavigate();
   const { setIsLoading } = useLoading();
-
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -39,16 +37,24 @@ export const Register = () => {
 
     try {
       setIsLoading(true);
-      await axios.post("https://citysynergybackend-jw8z.onrender.com/auth/register", {
-        email,
-        password,
-        confirmPassword,
-        captchaToken,
-      });
-      navigate("/login"); // Redirect to login page after successful registration
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/register/initiate`,
+        {
+          email,
+          password,
+          confirmPassword,
+          captchaToken,
+        }
+      );
+
+      if (response.data.message === "OTP sent successfully") {
+        navigate("/verify-otp", {
+          state: { email, flow: "register" , password},
+        });
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };

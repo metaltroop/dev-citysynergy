@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import mhlogo from "../assets/mhgovlogo.png";
-import axios from "axios";
-import ReCAPTCHA from "react-google-recaptcha";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ReCAPTCHA from "react-google-recaptcha";
+import axios from "axios";
 import { useLoading } from "../context/LoadingContext";
+import mhlogo from "../assets/mhgovlogo.png";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -29,15 +29,21 @@ export const Login = () => {
 
     try {
       setIsLoading(true);
-      const response = await axios.post("https://citysynergybackend-jw8z.onrender.com/auth/login", {
-        email,
-        password,
-        rememberMe,
-        captchaToken,
-      });
-      
-      localStorage.setItem("token", response.data.token);
-      navigate("/dashboard");
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login/initiate`,
+        {
+          email,
+          password,
+          rememberMe,
+          captchaToken,
+        }
+      );
+
+      if (response.data.message === "OTP sent to registered email") {
+        navigate("/verify-otp", {
+          state: { email, flow: "login" },
+        });
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Login failed");
     } finally {
@@ -51,11 +57,18 @@ export const Login = () => {
 
   return (
     <div className="bg-white flex items-center justify-center w-full h-screen relative">
-      <img src="./loginboy.png" className="absolute z-0 4xl:-translate-x-[70%] 3xl:-translate-x-[60%] 2xl:-translate-x-[50%] xl:-translate-x-[45%] -translate-x-[100%] -translate-y-20" alt="" />
+      <img
+        src="./loginboy.png"
+        className="absolute z-0 4xl:-translate-x-[70%] 3xl:-translate-x-[60%] 2xl:-translate-x-[50%] xl:-translate-x-[45%] -translate-x-[100%] -translate-y-20"
+        alt=""
+      />
       <div className="bg-[#f5f5f5] 2xl:w-1/4 xl:w-1/4 2xl:h-[85%] xl:h-3/4 w-full h-full p-5 rounded-2xl shadow-xl z-10">
         <div className="p-2">
           <div className="flex justify-end mb-4">
-            <Link to="/register" className="text-blue-500 hover:underline text-md mb-3 font-medium">
+            <Link
+              to="/register"
+              className="text-blue-500 hover:underline text-md mb-3 font-medium"
+            >
               Register &rarr;
             </Link>
           </div>
@@ -64,7 +77,7 @@ export const Login = () => {
             <h2 className="text-xl sm:text-3xl font-semibold">CITY SYNERGY</h2>
             <p className="text-center text-gray-500 mt-2 mb-8">Welcome Back!</p>
           </div>
-          
+
           <form onSubmit={handleLogin}>
             <div className="relative mb-6">
               <label
@@ -113,7 +126,7 @@ export const Login = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between mb-6">
               <label className="inline-flex items-center">
                 <input
